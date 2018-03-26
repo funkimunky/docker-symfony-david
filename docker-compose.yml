@@ -1,0 +1,37 @@
+version: '3'
+volumes:
+    database_data:
+        driver: local
+services:
+  php_7_1-sym:
+      build: ./docker/php/7.1
+      ports:
+        - $SERVER_PORT_PHP_7_1:80
+      volumes:
+        - $LOCAL_DIRECTORY:/var/www/html
+      links:
+        - mailcatcher-sym
+        - mysql-sym
+  mysql-sym:
+      image: mysql:$MYSQL_VERSION
+      ports:
+        - 3306:3306
+      volumes:
+        - database_data:/var/lib/mysql
+        - ./docker/mysql/5.6/conf.d:/etc/mysql/conf.d
+        - $LOCAL_DIRECTORY:/var/www/html
+      environment:
+        - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+  app_phpmyadmin-sym:
+      build: ./docker/phpmyadmin
+      environment:
+        PMA_ARBITRARY: 1
+      ports:
+        - $PHPMYADMIN_PORT:80
+      links:
+        - mysql-sym
+  mailcatcher-sym:
+      image: yappabe/mailcatcher
+      ports:
+        - 1025:1025
+        - $MAILCATCHER_PORT:1080
