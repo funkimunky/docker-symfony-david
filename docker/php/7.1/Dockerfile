@@ -3,6 +3,17 @@ FROM php:7.1-apache
 RUN a2enmod rewrite
 RUN service apache2 restart
 
+RUN apt-get update && apt-get install -y curl
+
+# Install nodejs
+WORKDIR /root
+RUN curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt-get update && apt-get install -y nodejs
+
+# Install yarn
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash
+
 # Install PHP 7.1 Extensions
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
@@ -21,7 +32,8 @@ RUN apt-get update && apt-get install -y \
         cron \
         supervisor \
         nano \
-    && docker-php-ext-install mbstring curl xml zip soap mysqli \
+        xterm \
+    && docker-php-ext-install mbstring xml zip soap mysqli \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-install gd imap phar pdo_mysql \
@@ -53,9 +65,24 @@ RUN a2ensite 001-symfony.local.conf
 
 RUN service apache2 restart
 
+# install sshd
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:screencast' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+RUN mkdir /root/.ssh
+COPY ./id_rsa.pub /tmp/id_rsa.pub
+RUN cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys && rm -f /tmp/id_rsa.pub
+EXPOSE 22
+
 WORKDIR /var/www/html/symfony
 
 COPY /supervisord.conf /etc/supervisor/supervisord.conf
+COPY /.bashrc /root/.bashrc
 
 # Configure cron.
 RUN rm -Rf /etc/cron.daily  && \
