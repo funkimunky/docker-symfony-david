@@ -3,11 +3,11 @@ volumes:
     database_data:
         driver: local
 services:
-  php_7_1-sym:
-      build: ./docker/php/7.1
-      container_name: symfony-php
+  php_7_2-sym:
+      build: ./docker/php/7.2
+      container_name: symfony-php72
       ports:
-        - $SERVER_PORT_PHP_7_1:80
+        - $SERVER_PORT_PHP_7_2:80
       volumes:
         - $LOCAL_DIRECTORY:/var/www/html
       links:
@@ -16,7 +16,7 @@ services:
       environment:
         - TERM=xterm   
   mysql-sym:
-      image: mysql:$MYSQL_VERSION
+      image: mysql:5.7
       container_name: symfony-mysql
       ports:
         - 3306:3306
