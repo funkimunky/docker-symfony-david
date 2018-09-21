@@ -1,6 +1,13 @@
- FROM php:7.2-apache
+FROM php:7.2-apache
 
 RUN a2enmod rewrite
+RUN a2enmod ssl
+RUN mkdir /etc/apache2/ssl
+WORKDIR /etc/apache2/ssl
+RUN openssl genrsa -out ca.key 2048
+RUN openssl req -nodes -new -key ca.key -out ca.csr -subj "/C=UK/ST=Stirlingshire/L=Stirling/O=OrgName/OU=IT Department/CN=localhost"
+RUN openssl x509 -req -days 365 -in ca.csr -signkey ca.key -out ca.crt
+COPY /000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN service apache2 restart
 
 RUN apt-get update && apt-get install -my curl wget gnupg
@@ -57,13 +64,20 @@ RUN php -r "unlink('composer-setup.php');"
 
 RUN chmod +x /usr/bin/composer 
 
-COPY 001-symfony.local.conf /etc/apache2/sites-available/001-symfony.local.conf
-
+# setup vhosts
 RUN a2dissite 000-default.conf
 
+COPY 001-symfony.local.conf /etc/apache2/sites-available/001-symfony.local.conf
 RUN a2ensite 001-symfony.local.conf
 
+COPY 002-the_spacebar.local.conf /etc/apache2/sites-available/002-the_spacebar.local.conf
+RUN a2ensite 002-the_spacebar.local.conf
+
+COPY 003-robocode_co_uk.local.conf /etc/apache2/sites-available/003-robocode_co_uk.local.conf
+RUN a2ensite 003-robocode_co_uk.local.conf
+
 RUN service apache2 restart
+# setup vhosts end
 
 # install sshd
 RUN apt-get update && apt-get install -y openssh-server
@@ -79,7 +93,7 @@ COPY ./id_rsa.pub /tmp/id_rsa.pub
 RUN cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys && rm -f /tmp/id_rsa.pub
 EXPOSE 22
 
-WORKDIR /var/www/html/symfony
+WORKDIR /var/www/html
 
 COPY /supervisord.conf /etc/supervisor/supervisord.conf
 COPY /.bashrc /root/.bashrc
@@ -89,5 +103,8 @@ RUN rm -Rf /etc/cron.daily  && \
     rm -Rf /etc/cron.weekly && \
     rm -Rf /etc/cron.monthly && \
     rm -Rf /etc/cron.hourly
+
+#install git
+RUN apt-get update && apt-get install -y git-all
 
 CMD exec supervisord -n
