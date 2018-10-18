@@ -20,6 +20,25 @@ services:
       extra_hosts:
         - "symfony.local:127.0.0.1"
         - "robocode.local:127.0.0.1"
+        - "10thperthshire.local:127.0.0.1"
+  php_5_6-sym:
+      build: ./docker/php/5.6
+      container_name: symfony-php56
+      ports:
+        - $SERVER_PORT_PHP_5_6:80
+      volumes:
+        - $LOCAL_DIRECTORY:/var/www/html
+      links:
+        - mailcatcher-sym
+        - mysql-sym
+      environment:
+        - TERM=xterm
+        - PHP_IDE_CONFIG=serverName=php_5_6
+        - APACHE_LOG_DIR=/var/www/html/logs/php56  
+      extra_hosts:
+        - "symfony.local:127.0.0.1"
+        - "robocode.local:127.0.0.1"
+        - "10thperthshire.local:127.0.0.1"
   mysql-sym:
       image: mysql:5.7
       container_name: symfony-mysql

@@ -1,5 +1,6 @@
-FROM php:7.2-apache
+FROM php:5.6.35-apache-jessie
 
+# Set up rewrite mod
 RUN a2enmod rewrite
 RUN a2enmod ssl
 RUN mkdir /etc/apache2/ssl
@@ -18,15 +19,18 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt-get update && apt-get install -y nodejs
 
+# Update respository list
+RUN apt-get update
+
 # Install yarn
 RUN curl -o- -L https://yarnpkg.com/install.sh | bash
-
-# Install PHP 7.1 Extensions
+    
+# Install php extensions
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
-        libpng-dev \
+        libpng12-dev \
         libssl-dev \
         libcurl3-dev \
         libxml2-dev \
@@ -40,14 +44,15 @@ RUN apt-get update && apt-get install -y \
         supervisor \
         nano \
         xterm \
-    && docker-php-ext-install mbstring xml zip soap mysqli \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && apt-get install -y python-pip \
+    && pip install supervisor-stdout \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install gd imap phar pdo_mysql \
-    && pecl install xdebug \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install phar mbstring curl xml zip soap imap gd pdo_mysql mysqli mysql \
+    && pecl install xdebug-2.5.5 \
     && docker-php-ext-enable xdebug
 
-# Copy over Xdebug Configuration.
+# Copy over Xdebug configuration.
 COPY /xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Copy over php.ini settings
