@@ -106,4 +106,9 @@ RUN apt-get update && apt-get install -y git-all
 COPY /xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 RUN service apache2 restart
 
+WORKDIR /usr/bin
+RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.phar \
+&& chmod +x phpunit
+
+WORKDIR /var/www/html
 CMD exec supervisord -n
