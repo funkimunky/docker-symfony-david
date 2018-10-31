@@ -47,9 +47,6 @@ RUN apt-get update && apt-get install -y \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug
 
-# Copy over Xdebug Configuration.
-COPY /xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
 # Copy over php.ini settings
 COPY /php.ini /usr/local/etc/php/php.ini
 
@@ -60,6 +57,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && chmod +x /usr/bin/composer 
 
 # setup vhosts
+
 RUN a2dissite 000-default.conf
 
 COPY 001-symfony.local.conf /etc/apache2/sites-available/001-symfony.local.conf
@@ -74,7 +72,6 @@ RUN a2ensite 003-robocode_co_uk.local.conf
 COPY 004-10thperthshire.local.conf /etc/apache2/sites-available/004-10thperthshire.local.conf
 RUN a2ensite 004-10thperthshire.local.conf
 
-RUN service apache2 restart
 # setup vhosts end
 
 # install sshd
@@ -104,5 +101,9 @@ RUN rm -Rf /etc/cron.daily  && \
 
 #install git
 RUN apt-get update && apt-get install -y git-all
+
+# Copy over Xdebug Configuration.
+COPY /xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN service apache2 restart
 
 CMD exec supervisord -n
