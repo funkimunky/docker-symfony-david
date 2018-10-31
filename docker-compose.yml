@@ -7,63 +7,65 @@ services:
       build: ./docker/php/7.2
       container_name: symfony-php72
       ports:
-        - $SERVER_PORT_PHP_7_2:80
+        - "$SERVER_PORT_PHP_7_2:80"
+        - "2272:22"
       volumes:
-        - $LOCAL_DIRECTORY:/var/www/html
+        - "$LOCAL_DIRECTORY:/var/www/html"
       links:
-        - mailcatcher-sym
+        # - mailcatcher-sym
         - mysql-sym
       environment:
         - TERM=xterm
         - PHP_IDE_CONFIG=serverName=php_7_2
-        - APACHE_LOG_DIR=/var/www/html/logs/php72  
+        - APACHE_LOG_DIR=/var/www/html/logs/php72
       extra_hosts:
         - "symfony.local:127.0.0.1"
         - "robocode.local:127.0.0.1"
         - "10thperthshire.local:127.0.0.1"
         - "thespacebar.local:127.0.0.1"
-  php_5_6-sym:
-      build: ./docker/php/5.6
-      container_name: symfony-php56
-      ports:
-        - $SERVER_PORT_PHP_5_6:80
-      volumes:
-        - $LOCAL_DIRECTORY:/var/www/html
-      links:
-        - mailcatcher-sym
-        - mysql-sym
-      environment:
-        - TERM=xterm
-        - PHP_IDE_CONFIG=serverName=php_5_6
-        - APACHE_LOG_DIR=/var/www/html/logs/php56  
-      extra_hosts:
-        - "symfony.local:127.0.0.1"
-        - "robocode.local:127.0.0.1"
-        - "10thperthshire.local:127.0.0.1"
-        - "thespacebar.local:127.0.0.1"
+  # php_5_6-sym:
+  #     build: ./docker/php/5.6
+  #     container_name: symfony-php56
+  #     ports:
+  #       - "$SERVER_PORT_PHP_5_6:80"
+  #       - "2256:22"
+  #     volumes:
+  #       - "$LOCAL_DIRECTORY:/var/www/html"
+  #     links:
+  #       - "mailcatcher-sym"
+  #       - "mysql-sym"
+  #     environment:
+  #       - "TERM=xterm"
+  #       - "PHP_IDE_CONFIG=serverName=php_5_6"
+  #       - "APACHE_LOG_DIR=/var/www/html/logs/php56"  
+  #     extra_hosts:
+  #       - "symfony.local:127.0.0.1"
+  #       - "robocode.local:127.0.0.1"
+  #       - "10thperthshire.local:127.0.0.1"
+  #       - "thespacebar.local:127.0.0.1"
   mysql-sym:
       image: mysql:5.7
       container_name: symfony-mysql
       ports:
-        - 3306:3306
+        - "3306:3306"
       volumes:
-        - database_data:/var/lib/mysql
-        - ./docker/mysql/5.6/conf.d:/etc/mysql/conf.d
-        - $LOCAL_DIRECTORY:/var/www/html
+        - "database_data:/var/lib/mysql"
+        - "./docker/mysql/5.6/conf.d:/etc/mysql/conf.d"
+        - "$LOCAL_DIRECTORY:/var/www/html"
       environment:
-        - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD      
+        - "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"      
   app_phpmyadmin-sym:
       build: ./docker/phpmyadmin
       container_name: symfony-phpmyadmin
-      environment:
+      environment: 
         PMA_ARBITRARY: 1
       ports:
-        - $PHPMYADMIN_PORT:80
+        - "$PHPMYADMIN_PORT:80"
       links:
-        - mysql-sym
-  mailcatcher-sym:
-      image: yappabe/mailcatcher
-      container_name: symfony-mailcatcher
-      ports:
-        - 1025:1025
-        - $MAILCATCHER_PORT:1080
+        - "mysql-sym"
+  # mailcatcher-sym:
+  #     image: yappabe/mailcatcher
+  #     container_name: symfony-mailcatcher
+  #     ports:
+  #       - "1025:1025"
+  #       - "$MAILCATCHER_PORT:1080"
