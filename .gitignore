@@ -7,3 +7,5 @@ docker/php/5\.6/id_rsa\.pub
 docker/php/7\.2/id_rsa\.pub
 
 docker/php/7\.1/id_rsa\.pub
+
+\.env
