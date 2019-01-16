@@ -1,5 +1,6 @@
 FROM php:7.2-apache
 
+RUN apt-get update
 RUN a2enmod rewrite
 RUN a2enmod ssl
 RUN mkdir /etc/apache2/ssl
