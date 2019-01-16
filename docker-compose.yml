@@ -8,6 +8,7 @@ services:
       container_name: symfony-php72
       ports:
         - "$SERVER_PORT_PHP_7_2:80"
+        - "$SERVER_PORT_PHP_7_2_SSL:443"
         - "2272:22"
       volumes:
         - "$LOCAL_DIRECTORY:/var/www/html"
