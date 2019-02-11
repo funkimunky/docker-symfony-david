@@ -58,27 +58,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php -r "unlink('composer-setup.php');" \
     && chmod +x /usr/bin/composer 
 
-# setup vhosts
-
-RUN a2dissite 000-default.conf
-
-COPY 001-symfony.local.conf /etc/apache2/sites-available/001-symfony.local.conf
-RUN a2ensite 001-symfony.local.conf
-
-COPY 002-the_spacebar.local.conf /etc/apache2/sites-available/002-the_spacebar.local.conf
-RUN a2ensite 002-the_spacebar.local.conf
-
-COPY 003-robocode_co_uk.local.conf /etc/apache2/sites-available/003-robocode_co_uk.local.conf
-RUN a2ensite 003-robocode_co_uk.local.conf
-
-COPY 004-10thperthshire.local.conf /etc/apache2/sites-available/004-10thperthshire.local.conf
-RUN a2ensite 004-10thperthshire.local.conf
-
-COPY 005-athomson.local.conf /etc/apache2/sites-available/005-athomson.local.conf
-RUN a2ensite 005-athomson.local.conf
-
-# setup vhosts end
-
 # install sshd
 RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
@@ -114,6 +93,29 @@ RUN service apache2 restart
 WORKDIR /usr/bin
 RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.phar \
 && chmod +x phpunit
+
+# setup vhosts
+
+RUN a2dissite 000-default.conf
+
+COPY 001-symfony.local.conf /etc/apache2/sites-available/001-symfony.local.conf
+RUN a2ensite 001-symfony.local.conf
+
+COPY 002-the_spacebar.local.conf /etc/apache2/sites-available/002-the_spacebar.local.conf
+RUN a2ensite 002-the_spacebar.local.conf
+
+COPY 003-robocode_co_uk.local.conf /etc/apache2/sites-available/003-robocode_co_uk.local.conf
+RUN a2ensite 003-robocode_co_uk.local.conf
+
+COPY 004-10thperthshire.local.conf /etc/apache2/sites-available/004-10thperthshire.local.conf
+RUN a2ensite 004-10thperthshire.local.conf
+
+COPY 005-athomson.local.conf /etc/apache2/sites-available/005-athomson.local.conf
+RUN a2ensite 005-athomson.local.conf
+
+RUN service apache2 restart
+
+# setup vhosts end
 
 WORKDIR /var/www/html
 CMD exec supervisord -n
