@@ -1,6 +1,7 @@
 FROM php:7.2-apache
-
-RUN apt-get update
+//fix for https://github.com/VirtualFlyBrain/pipeline/commit/f89a4e2bb3ce14809bc135aa6581fbf03132fcc4
+// https://github.com/rocker-org/shiny/issues/19
+RUN apt-get update || apt-get update
 RUN a2enmod rewrite
 RUN a2enmod ssl
 RUN mkdir /etc/apache2/ssl
@@ -11,7 +12,7 @@ RUN openssl x509 -req -days 365 -in ca.csr -signkey ca.key -out ca.crt
 COPY /000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN service apache2 restart
 
-RUN apt-get update && apt-get install -my curl wget gnupg
+RUN apt-get update || apt-get update && apt-get install -my curl wget gnupg
 
 # Install nodejs
 WORKDIR /root
@@ -72,6 +73,9 @@ RUN a2ensite 003-robocode_co_uk.local.conf
 
 COPY 004-10thperthshire.local.conf /etc/apache2/sites-available/004-10thperthshire.local.conf
 RUN a2ensite 004-10thperthshire.local.conf
+
+COPY 005-athomson.local.conf /etc/apache2/sites-available/005-athomson.local.conf
+RUN a2ensite 005-athomson.local.conf
 
 # setup vhosts end
 
