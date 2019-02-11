@@ -1,6 +1,6 @@
 FROM php:7.2-apache
-//fix for https://github.com/VirtualFlyBrain/pipeline/commit/f89a4e2bb3ce14809bc135aa6581fbf03132fcc4
-// https://github.com/rocker-org/shiny/issues/19
+# fix for https://github.com/VirtualFlyBrain/pipeline/commit/f89a4e2bb3ce14809bc135aa6581fbf03132fcc4
+# https://github.com/rocker-org/shiny/issues/19
 RUN apt-get update || apt-get update
 RUN a2enmod rewrite
 RUN a2enmod ssl
