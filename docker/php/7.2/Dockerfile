@@ -113,6 +113,11 @@ RUN a2ensite 004-10thperthshire.local.conf
 COPY 005-athomson.local.conf /etc/apache2/sites-available/005-athomson.local.conf
 RUN a2ensite 005-athomson.local.conf
 
+# install apcu
+
+RUN pecl install apcu \
+  && docker-php-ext-enable apcu
+
 RUN service apache2 restart
 
 # setup vhosts end
