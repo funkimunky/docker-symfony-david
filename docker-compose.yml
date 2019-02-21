@@ -19,6 +19,7 @@ services:
         - TERM=xterm
         - PHP_IDE_CONFIG=serverName=php_7_2
         - APACHE_LOG_DIR=/var/www/html/logs/php72
+        - XDEBUG_CONFIG="remote_port=$REMOTE_PORT remote_enable=on remote_host=$REMOTE_HOST idekey=PHPSTORM remote_log=$REMOTE_LOG remote_connect_back=off profiler_enable=0 profiler_enable_trigger=1 profiler_output_dir=$PROFILER_OUT_DIRECTORY profiler_output_name=$PROFILER_OUT_NAME"
       extra_hosts:
         - "symfony.local:127.0.0.1"
         - "robocode.local:127.0.0.1"
