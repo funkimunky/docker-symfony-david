@@ -86,10 +86,6 @@ RUN rm -Rf /etc/cron.daily  && \
 #install git
 RUN apt-get update && apt-get install -y git-all
 
-# Copy over Xdebug Configuration.
-COPY /xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-RUN service apache2 restart
-
 WORKDIR /usr/bin
 RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.phar \
 && chmod +x phpunit
@@ -121,6 +117,10 @@ RUN pecl install apcu \
 RUN service apache2 restart
 
 # setup vhosts end
+
+# Copy over Xdebug Configuration.
+COPY /xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN service apache2 restart
 
 WORKDIR /var/www/html
 CMD exec supervisord -n
